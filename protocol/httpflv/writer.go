@@ -15,7 +15,7 @@ import (
 
 const (
 	headerLen   = 11
-	maxQueueNum = 4096
+	maxQueueNum = 16384
 )
 
 type FLVWriter struct {
