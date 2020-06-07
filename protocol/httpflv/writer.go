@@ -15,7 +15,7 @@ import (
 
 const (
 	headerLen   = 11
-	maxQueueNum = 1024
+	maxQueueNum = 4096
 )
 
 type FLVWriter struct {
@@ -46,6 +46,11 @@ func NewFLVWriter(app, title, url string, ctx http.ResponseWriter) *FLVWriter {
 	pio.PutI32BE(ret.buf[:4], 0)
 	ret.ctx.Write(ret.buf[:4])
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error("NewFLVWriter: go func() panic:", r)
+			}
+		}()
 		err := ret.SendPacket()
 		if err != nil {
 			log.Error("SendPacket error: ", err)
@@ -167,6 +172,7 @@ func (flvWriter *FLVWriter) Wait() {
 
 func (flvWriter *FLVWriter) Close(error) {
 	log.Debug("http flv closed")
+	log.Info("DEBUG: flvWriter closed")
 	if !flvWriter.closed {
 		close(flvWriter.packetQueue)
 		close(flvWriter.closedChan)
