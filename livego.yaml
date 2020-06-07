@@ -1,21 +1,20 @@
-# # Logger level
-# level: info
+# Logger level
+level: info
 
-# # FLV Options
-# flv_dir: "./tmp"
-# httpflv_addr: ":7001"
+# FLV Options
+flv_dir: "./tmp"
+httpflv_addr: ":7001"
 
-# # RTMP Options
-# rtmp_addr: ":1935"
-# read_timeout: 10
-# write_timeout: 10
+# RTMP Options
+rtmp_addr: ":1935"
+read_timeout: 10
+write_timeout: 10
 
-# # HLS Options
+# HLS Options
 # hls_addr: ":7002"
 
-# # API Options
-# api_addr: ":8090"
+# API Options
+api_addr: ":8090"
 server:
 - appname: live
   live: true
-  hls: true
