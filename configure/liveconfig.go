@@ -46,8 +46,6 @@ type ServerCfg struct {
 	HLSAddr         string       `mapstructure:"hls_addr"`
 	HLSKeepAfterEnd bool         `mapstructure:"hls_keep_after_end"`
 	APIAddr         string       `mapstructure:"api_addr"`
-	RedisAddr       string       `mapstructure:"redis_addr"`
-	RedisPwd        string       `mapstructure:"redis_pwd"`
 	ReadTimeout     int          `mapstructure:"read_timeout"`
 	WriteTimeout    int          `mapstructure:"write_timeout"`
 	GopNum          int          `mapstructure:"gop_num"`
@@ -151,9 +149,8 @@ func GetStaticPushUrlList(appname string) ([]string, bool) {
 		if (app.Appname == appname) && app.Live {
 			if len(app.StaticPush) > 0 {
 				return app.StaticPush, true
-			} else {
-				return nil, false
 			}
+			return nil, false
 		}
 	}
 	return nil, false

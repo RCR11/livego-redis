@@ -2,6 +2,7 @@ package configure
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/gwuhaolin/livego/utils/uid"
 
@@ -22,14 +23,15 @@ var RoomKeys = &RoomKeysType{
 var saveInLocal = true
 
 func Init() {
-	saveInLocal = len(Config.GetString("redis_addr")) == 0
+	pass, ok := os.LookupEnv("REDIS_PASSWORD")
+	saveInLocal = !ok
 	if saveInLocal {
 		return
 	}
 
 	RoomKeys.redisCli = redis.NewClient(&redis.Options{
-		Addr:     Config.GetString("redis_addr"),
-		Password: Config.GetString("redis_pwd"),
+		Addr:     "redis:6379",
+		Password: pass,
 		DB:       0,
 	})
 
@@ -100,9 +102,8 @@ func (r *RoomKeysType) GetChannel(key string) (channel string, err error) {
 	chann, found := r.localCache.Get(key)
 	if found {
 		return chann.(string), nil
-	} else {
-		return "", fmt.Errorf("%s does not exists", key)
 	}
+	return "", fmt.Errorf("%s does not exists", key)
 }
 
 func (r *RoomKeysType) DeleteChannel(channel string) bool {

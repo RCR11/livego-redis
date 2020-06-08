@@ -18,3 +18,7 @@ api_addr: ":8090"
 server:
 - appname: live
   live: true
+
+# Redis Options
+redis_addr: "redis:6379"
+redis_pwd: '%env(string:REDIS_PASSWORD)%'
