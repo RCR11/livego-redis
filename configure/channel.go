@@ -30,7 +30,7 @@ func Init() {
 	}
 
 	RoomKeys.redisCli = redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     os.Getenv("REDIS_ADDR"),
 		Password: pass,
 		DB:       0,
 	})

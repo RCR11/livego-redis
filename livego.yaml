@@ -20,5 +20,5 @@ server:
   live: true
 
 # Redis Options
-redis_addr: "redis:6379"
+redis_addr: '%env(string:REDIS_ADDR)%'
 redis_pwd: '%env(string:REDIS_PASSWORD)%'
