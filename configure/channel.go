@@ -37,7 +37,8 @@ func Init() {
 
 	_, err := RoomKeys.redisCli.Ping().Result()
 	if err != nil {
-		log.Panic("Redis: ", err)
+		saveInLocal = true
+		return
 	}
 
 	log.Info("Redis connected")
