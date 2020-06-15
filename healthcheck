@@ -12,8 +12,8 @@ if ping="$(wget "$host:8090" 2>&1 | grep -c "$err")" && [ "$ping" != '0' ]; then
 	exit 1
 fi
 
-if ping="$(wget "$host:1935" 2>&1 | grep -c "$err")" && [ "$ping" != '0' ]; then
-	exit 1
-fi
+# if ping="$(wget "$host:1935" 2>&1 | grep -c "$err")" && [ "$ping" != '0' ]; then
+# 	exit 1
+# fi
 
 exit 0
