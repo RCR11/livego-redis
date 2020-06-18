@@ -2,15 +2,17 @@ package main
 
 import (
 	"fmt"
+	"net"
+	"os"
+	"path"
+	"runtime"
+	"time"
+
 	"github.com/gwuhaolin/livego/configure"
 	"github.com/gwuhaolin/livego/protocol/api"
 	"github.com/gwuhaolin/livego/protocol/hls"
 	"github.com/gwuhaolin/livego/protocol/httpflv"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
-	"net"
-	"path"
-	"runtime"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -110,11 +112,18 @@ func startAPI(stream *rtmp.RtmpStream) {
 func init() {
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp: true,
+		ForceColors:   true,
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 			filename := path.Base(f.File)
 			return fmt.Sprintf("%s()", f.Function), fmt.Sprintf(" %s:%d", filename, f.Line)
 		},
 	})
+	log.SetReportCaller(true)
+	if os.Getenv("DEBUG") == "true" {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
 }
 
 func main() {
@@ -125,14 +134,13 @@ func main() {
 		}
 	}()
 
-	log.Infof(`
-     _     _            ____       
-    | |   (_)_   _____ / ___| ___  
-    | |   | \ \ / / _ \ |  _ / _ \ 
-    | |___| |\ V /  __/ |_| | (_) |
-    |_____|_| \_/ \___|\____|\___/ 
-        version: %s
-	`, VERSION)
+	
+    log.Infof(` _     _            ____       `)
+    log.Infof(`| |   (_)_   _____ / ___| ___  `)
+    log.Infof(`| |   | \ \ / / _ \ |  _ / _ \ `)
+    log.Infof(`| |___| |\ V /  __/ |_| | (_) |`)
+    log.Infof(`|_____|_| \_/ \___|\____|\___/ `)
+    log.Infof(`    version: %s`, VERSION)
 
 	stream := rtmp.NewRtmpStream()
 	hlsServer := startHls()
