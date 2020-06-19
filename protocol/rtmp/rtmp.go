@@ -79,7 +79,7 @@ func NewRtmpServer(h av.Handler, getter av.GetWriter) *Server {
 		getter:  getter,
 		redisCli: redis.NewClient(&redis.Options{
 			Addr:     os.Getenv("REDIS_ADDR"),
-			Password: os.Getenv("REDIS_PASSEORD"),
+			Password: os.Getenv("REDIS_PASSWORD"),
 			DB:       0,
 		}),
 	}
