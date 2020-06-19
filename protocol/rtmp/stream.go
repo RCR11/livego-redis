@@ -2,9 +2,11 @@ package rtmp
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
+	"github.com/go-redis/redis/v7"
 	"github.com/gwuhaolin/livego/av"
 	"github.com/gwuhaolin/livego/protocol/rtmp/cache"
 	"github.com/gwuhaolin/livego/protocol/rtmp/rtmprelay"
@@ -89,11 +91,12 @@ func (rs *RtmpStream) CheckAlive() {
 }
 
 type Stream struct {
-	isStart bool
-	cache   *cache.Cache
-	r       av.ReadCloser
-	ws      cmap.ConcurrentMap
-	info    av.Info
+	isStart  bool
+	cache    *cache.Cache
+	r        av.ReadCloser
+	ws       cmap.ConcurrentMap
+	info     av.Info
+	redisCli *redis.Client
 }
 
 type PackWriterCloser struct {
@@ -109,6 +112,11 @@ func NewStream() *Stream {
 	return &Stream{
 		cache: cache.NewCache(),
 		ws:    cmap.New(),
+		redisCli: redis.NewClient(&redis.Options{
+			Addr:     os.Getenv("REDIS_ADDR"),
+			Password: os.Getenv("REDIS_PASSWORD"),
+			DB:       0,
+		}),
 	}
 }
 
@@ -392,6 +400,9 @@ func (s *Stream) closeInter() {
 		s.StopStaticPush()
 		log.Debugf("[%v] publisher closed", s.r.Info())
 	}
+
+	username := strings.TrimPrefix(s.r.Info().Key, "live/")
+	s.redisCli.SRem("living", username).Err()
 
 	for item := range s.ws.IterBuffered() {
 		v := item.Val.(*PackWriterCloser)

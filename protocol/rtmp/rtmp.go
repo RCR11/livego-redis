@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os"
 	"reflect"
 	"strings"
 	"time"
 
+	"github.com/go-redis/redis/v7"
 	"github.com/gwuhaolin/livego/utils/uid"
 
 	"github.com/gwuhaolin/livego/av"
@@ -68,12 +70,18 @@ func (c *Client) GetHandle() av.Handler {
 type Server struct {
 	handler av.Handler
 	getter  av.GetWriter
+	redisCli *redis.Client
 }
 
 func NewRtmpServer(h av.Handler, getter av.GetWriter) *Server {
 	return &Server{
 		handler: h,
 		getter:  getter,
+		redisCli: redis.NewClient(&redis.Options{
+			Addr:     os.Getenv("REDIS_ADDR"),
+			Password: os.Getenv("REDIS_PASSEORD"),
+			DB:       0,
+		}),
 	}
 }
 
@@ -136,6 +144,12 @@ func (s *Server) handleConn(conn *core.Conn) error {
 		reader := NewVirReader(connServer)
 		s.handler.HandleReader(reader)
 		log.Debugf("new publisher: %+v", reader.Info())
+
+		username := strings.TrimPrefix(reader.Info().Key, "live/")
+		err = s.redisCli.SAdd("living", username).Err()
+		if err != nil {
+			return err
+		}
 
 		if s.getter != nil {
 			writeType := reflect.TypeOf(s.getter)
