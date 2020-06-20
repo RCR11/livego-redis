@@ -402,7 +402,21 @@ func (s *Stream) closeInter() {
 	}
 
 	username := strings.TrimPrefix(s.r.Info().Key, "live/")
-	s.redisCli.SRem("living", username).Err()
+	pipe := s.redisCli.TxPipeline()
+	pipe.SRem("living", username)
+	pipe.Del("living:"+username)
+	cmds, err := pipe.Exec()
+	if err != nil {
+		log.Warn(err)
+	} else {
+		for _, cmd := range cmds {
+			err = cmd.Err()
+			if err != nil {
+				log.Warn(err)
+			}
+		}
+	}
+
 
 	for item := range s.ws.IterBuffered() {
 		v := item.Val.(*PackWriterCloser)

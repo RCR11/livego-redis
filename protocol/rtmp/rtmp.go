@@ -146,9 +146,19 @@ func (s *Server) handleConn(conn *core.Conn) error {
 		log.Debugf("new publisher: %+v", reader.Info())
 
 		username := strings.TrimPrefix(reader.Info().Key, "live/")
-		err = s.redisCli.SAdd("living", username).Err()
+		pipe := s.redisCli.TxPipeline()
+		pipe.SAdd("living", username)
+		pipe.Set("living:"+username, time.Now().String(), 0)
+		cmds, err := pipe.Exec()
 		if err != nil {
-			return err
+			log.Warn(err)
+		} else {
+			for _, cmd := range cmds {
+				err = cmd.Err()
+				if err != nil {
+					log.Warn(err)
+				}
+			}
 		}
 
 		if s.getter != nil {
