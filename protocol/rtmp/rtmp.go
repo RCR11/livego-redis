@@ -148,7 +148,7 @@ func (s *Server) handleConn(conn *core.Conn) error {
 		username := strings.TrimPrefix(reader.Info().Key, "live/")
 		pipe := s.redisCli.TxPipeline()
 		pipe.SAdd("living", username)
-		pipe.Set("living:"+username, time.Now().String(), 0)
+		pipe.Set("living:"+username, time.Now().Format(time.RFC3339), 0)
 		cmds, err := pipe.Exec()
 		if err != nil {
 			log.Warn(err)
