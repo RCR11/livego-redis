@@ -68,8 +68,8 @@ func (c *Client) GetHandle() av.Handler {
 }
 
 type Server struct {
-	handler av.Handler
-	getter  av.GetWriter
+	handler  av.Handler
+	getter   av.GetWriter
 	redisCli *redis.Client
 }
 
@@ -146,20 +146,21 @@ func (s *Server) handleConn(conn *core.Conn) error {
 		log.Debugf("new publisher: %+v", reader.Info())
 
 		username := strings.TrimPrefix(reader.Info().Key, "live/")
-		pipe := s.redisCli.TxPipeline()
-		pipe.SAdd("living", username)
-		pipe.Set("living:"+username, time.Now().Format(time.RFC3339), 0)
-		cmds, err := pipe.Exec()
-		if err != nil {
-			log.Warn(err)
-		} else {
-			for _, cmd := range cmds {
-				err = cmd.Err()
-				if err != nil {
-					log.Warn(err)
+		go func(pipe redis.Pipeliner, username string) {
+			pipe.SAdd("living", username)
+			pipe.Set("living:"+username, time.Now().Format(time.RFC3339), 0)
+			cmds, err := pipe.Exec()
+			if err != nil {
+				log.Warn(err)
+			} else {
+				for _, cmd := range cmds {
+					err = cmd.Err()
+					if err != nil {
+						log.Warn(err)
+					}
 				}
 			}
-		}
+		}(s.redisCli.TxPipeline(), username)
 
 		if s.getter != nil {
 			writeType := reflect.TypeOf(s.getter)

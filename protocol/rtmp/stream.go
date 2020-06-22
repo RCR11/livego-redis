@@ -402,21 +402,21 @@ func (s *Stream) closeInter() {
 	}
 
 	username := strings.TrimPrefix(s.r.Info().Key, "live/")
-	pipe := s.redisCli.TxPipeline()
-	pipe.SRem("living", username)
-	pipe.Del("living:"+username)
-	cmds, err := pipe.Exec()
-	if err != nil {
-		log.Warn(err)
-	} else {
-		for _, cmd := range cmds {
-			err = cmd.Err()
-			if err != nil {
-				log.Warn(err)
+	go func(pipe redis.Pipeliner, username string) {
+		pipe.SRem("living", username)
+		pipe.Del("living:" + username)
+		cmds, err := pipe.Exec()
+		if err != nil {
+			log.Warn(err)
+		} else {
+			for _, cmd := range cmds {
+				err = cmd.Err()
+				if err != nil {
+					log.Warn(err)
+				}
 			}
 		}
-	}
-
+	}(s.redisCli.TxPipeline(), username)
 
 	for item := range s.ws.IterBuffered() {
 		v := item.Val.(*PackWriterCloser)
