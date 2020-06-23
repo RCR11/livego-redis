@@ -3,8 +3,10 @@ package httpflv
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/go-redis/redis/v7"
 	"github.com/gwuhaolin/livego/av"
 	"github.com/gwuhaolin/livego/protocol/amf"
 	"github.com/gwuhaolin/livego/utils/pio"
@@ -172,7 +174,19 @@ func (flvWriter *FLVWriter) Wait() {
 
 func (flvWriter *FLVWriter) Close(error) {
 	log.Debug("http flv closed")
-	log.Info("DEBUG: flvWriter closed")
+
+	go func(username string) {
+		client := redis.NewClient(&redis.Options{
+			Addr:     os.Getenv("REDIS_ADDR"),
+			Password: os.Getenv("REDIS_PASSWORD"),
+			DB:       0,
+		})
+		defer client.Close()
+		err := client.Decr("watching:" + username).Err()
+		if err != nil {
+			log.Warn(err)
+		}
+	}(flvWriter.title)
 	if !flvWriter.closed {
 		close(flvWriter.packetQueue)
 		close(flvWriter.closedChan)

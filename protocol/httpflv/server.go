@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 
+	"github.com/go-redis/redis/v7"
 	"github.com/gwuhaolin/livego/av"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
 
@@ -13,7 +15,8 @@ import (
 )
 
 type Server struct {
-	handler av.Handler
+	handler  av.Handler
+	redisCli *redis.Client
 }
 
 type stream struct {
@@ -29,6 +32,11 @@ type streams struct {
 func NewServer(h av.Handler) *Server {
 	return &Server{
 		handler: h,
+		redisCli: redis.NewClient(&redis.Options{
+			Addr:     os.Getenv("REDIS_ADDR"),
+			Password: os.Getenv("REDIS_PASSWORD"),
+			DB:       0,
+		}),
 	}
 }
 
@@ -125,6 +133,14 @@ func (server *Server) handleConn(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	username := strings.TrimPrefix(u, "live/")
+	go func(username string) {
+		err := server.redisCli.Incr("watching:" + username).Err()
+		if err != nil {
+			log.Warn(err)
+		}
+	}(username)
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	writer := NewFLVWriter(paths[0], paths[1], url, w)
