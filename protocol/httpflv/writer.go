@@ -44,9 +44,15 @@ func NewFLVWriter(app, title, url string, ctx http.ResponseWriter) *FLVWriter {
 		packetQueue: make(chan *av.Packet, maxQueueNum),
 	}
 
-	ret.ctx.Write([]byte{0x46, 0x4c, 0x56, 0x01, 0x05, 0x00, 0x00, 0x00, 0x09})
+	if _, err := ret.ctx.Write([]byte{0x46, 0x4c, 0x56, 0x01, 0x05, 0x00, 0x00, 0x00, 0x09}); err != nil {
+		log.Errorf("Error on response writer")
+		ret.closed = true
+	}
 	pio.PutI32BE(ret.buf[:4], 0)
-	ret.ctx.Write(ret.buf[:4])
+	if _, err := ret.ctx.Write(ret.buf[:4]); err != nil {
+		log.Errorf("Error on response writer")
+		ret.closed = true
+	}
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -55,9 +61,10 @@ func NewFLVWriter(app, title, url string, ctx http.ResponseWriter) *FLVWriter {
 		}()
 		err := ret.SendPacket()
 		if err != nil {
-			log.Error("SendPacket error: ", err)
+			log.Debug("SendPacket error: ", err)
 			ret.closed = true
 		}
+
 	}()
 	return ret
 }
@@ -161,8 +168,6 @@ func (flvWriter *FLVWriter) SendPacket() error {
 		}
 
 	}
-
-	return nil
 }
 
 func (flvWriter *FLVWriter) Wait() {

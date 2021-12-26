@@ -130,9 +130,19 @@ func (s *Server) handleConn(conn *core.Conn) error {
 
 	log.Debugf("handleConn: IsPublisher=%v", connServer.IsPublisher())
 	if connServer.IsPublisher() {
+		if configure.Config.GetBool("rtmp_noauth") {
+			key, err := configure.RoomKeys.GetKey(name)
+			if err != nil {
+				err := fmt.Errorf("Cannot create key err=%s", err.Error())
+				conn.Close()
+				log.Error("GetKey err: ", err)
+				return err
+			}
+			name = key
+		}
 		channel, err := configure.RoomKeys.GetChannel(name)
 		if err != nil {
-			err := fmt.Errorf("invalid key")
+			err := fmt.Errorf("invalid key err=%s", err.Error())
 			conn.Close()
 			log.Error("CheckKey err: ", err)
 			return err
@@ -168,8 +178,10 @@ func (s *Server) handleConn(conn *core.Conn) error {
 			writer := s.getter.GetWriter(reader.Info())
 			s.handler.HandleWriter(writer)
 		}
-		flvWriter := new(flv.FlvDvr)
-		s.handler.HandleWriter(flvWriter.GetWriter(reader.Info()))
+		if configure.Config.GetBool("flv_archive") {
+			flvWriter := new(flv.FlvDvr)
+			s.handler.HandleWriter(flvWriter.GetWriter(reader.Info()))
+		}
 	} else {
 		writer := NewVirWriter(connServer)
 		log.Debugf("new player: %+v", writer.Info())
@@ -354,7 +366,6 @@ func (v *VirWriter) SendPacket() error {
 		}
 
 	}
-	return nil
 }
 
 func (v *VirWriter) Info() (ret av.Info) {
