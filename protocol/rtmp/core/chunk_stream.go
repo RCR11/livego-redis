@@ -117,7 +117,6 @@ func (chunkStream *ChunkStream) writeChunk(w *ReadWriter, chunkSize int) error {
 	}
 
 	return nil
-
 }
 
 func (chunkStream *ChunkStream) readChunk(r *ReadWriter, chunkSize uint32, pool *pool.Pool) error {

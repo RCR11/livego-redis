@@ -276,7 +276,7 @@ func (e *Encoder) EncodeAmf3Object(w io.Writer, val TypedObject, encodeMarker bo
 	trait.Dynamic = false
 	trait.Externalizable = false
 
-	for k, _ := range val.Object {
+	for k := range val.Object {
 		trait.Properties = append(trait.Properties, k)
 	}
 

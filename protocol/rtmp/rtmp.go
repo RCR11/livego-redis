@@ -289,7 +289,6 @@ func (v *VirWriter) DropPacket(pktQue chan *av.Packet, info av.Info) {
 			} else {
 				pktQue <- tmpPkt
 			}
-
 		}
 
 		if ok && tmpPkt.IsVideo {
@@ -303,7 +302,6 @@ func (v *VirWriter) DropPacket(pktQue chan *av.Packet, info av.Info) {
 				<-pktQue
 			}
 		}
-
 	}
 	log.Debug("packet queue len: ", len(pktQue))
 }
@@ -364,7 +362,6 @@ func (v *VirWriter) SendPacket() error {
 		} else {
 			return fmt.Errorf("closed")
 		}
-
 	}
 }
 

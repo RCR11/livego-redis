@@ -13,6 +13,7 @@ import (
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
+	jwt2 "github.com/form3tech-oss/jwt-go"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -82,7 +83,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 
 		jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 			Extractor: jwtmiddleware.FromFirst(jwtmiddleware.FromAuthHeader, jwtmiddleware.FromParameter("jwt")),
-			ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			ValidationKeyGetter: func(token *jwt2.Token) (interface{}, error) {
 				return []byte(configure.Config.GetString("jwt.secret")), nil
 			},
 			SigningMethod: algorithm,
@@ -202,7 +203,7 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 			return true
 		})
 	} else {
-        // Warning: The room should be in the "live/stream" format!
+		// Warning: The room should be in the "live/stream" format!
 		roomInfo, exists := (rtmpStream.GetStreams()).Load(room)
 		if exists == false {
 			res.Status = 404
@@ -299,12 +300,13 @@ func (s *Server) handlePull(w http.ResponseWriter, req *http.Request) {
 		log.Debugf("rtmprelay start push %s from %s", remoteurl, localurl)
 		err = pullRtmprelay.Start()
 		if err != nil {
+			res.Status = 400
 			retString = fmt.Sprintf("push error=%v", err)
 		} else {
 			s.session[keyString] = pullRtmprelay
-			retString = fmt.Sprintf("<h1>push url start %s ok</h1></br>", url)
+			retString = fmt.Sprintf("<h1>pull url start %s ok</h1></br>", url)
 		}
-		res.Status = 400
+
 		res.Data = retString
 		log.Debugf("pull start return %s", retString)
 	}

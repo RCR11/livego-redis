@@ -35,7 +35,6 @@ func (codeParser *CodecParser) SampleRate() (int, error) {
 }
 
 func (codeParser *CodecParser) Parse(p *av.Packet, w io.Writer) (err error) {
-
 	switch p.IsVideo {
 	case true:
 		f, ok := p.Header.(av.VideoPacketHeader)
@@ -63,7 +62,6 @@ func (codeParser *CodecParser) Parse(p *av.Packet, w io.Writer) (err error) {
 				err = codeParser.mp3.Parse(p.Data)
 			}
 		}
-
 	}
 	return
 }

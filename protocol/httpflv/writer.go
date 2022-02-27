@@ -64,7 +64,6 @@ func NewFLVWriter(app, title, url string, ctx http.ResponseWriter) *FLVWriter {
 			log.Debug("SendPacket error: ", err)
 			ret.closed = true
 		}
-
 	}()
 	return ret
 }
@@ -166,7 +165,6 @@ func (flvWriter *FLVWriter) SendPacket() error {
 		} else {
 			return fmt.Errorf("closed")
 		}
-
 	}
 }
 

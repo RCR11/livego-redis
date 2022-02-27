@@ -263,7 +263,6 @@ func (d *Decoder) DecodeAmf3Object(r io.Reader, decodeMarker bool) (result inter
 	if traitIsRef {
 		traitRef := refVal >> 1
 		trait = d.traitRefs[traitRef]
-
 	} else {
 		// build a new trait from what's left of the given u29
 		trait = *NewTrait()

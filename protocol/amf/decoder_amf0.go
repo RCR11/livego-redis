@@ -147,7 +147,6 @@ func (d *Decoder) DecodeAmf0Object(r io.Reader, decodeMarker bool) (Object, erro
 	}
 
 	return result, nil
-
 }
 
 // marker: 1 byte 0x05

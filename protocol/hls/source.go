@@ -3,8 +3,9 @@ package hls
 import (
 	"bytes"
 	"fmt"
-	"github.com/gwuhaolin/livego/configure"
 	"time"
+
+	"github.com/gwuhaolin/livego/configure"
 
 	"github.com/gwuhaolin/livego/av"
 	"github.com/gwuhaolin/livego/container/flv"
@@ -92,7 +93,6 @@ func (source *Source) DropPacket(pktQue chan *av.Packet, info av.Info) {
 				<-pktQue
 			}
 		}
-
 	}
 	log.Debug("packet queue len: ", len(pktQue))
 }
