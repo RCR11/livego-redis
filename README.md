@@ -6,7 +6,7 @@ Build with `go build && make build`</br>
 Execute with `make run`</br>
 
 Request a stream key from `http://localhost:8090/control/get?room=movie`</br>
-Publish to `rtmp://localhost:1935/live/{channelkey}` (default appname is live)</br></br>
+Publish to `rtmp://localhost:1935/live/{StreamKey}`</br></br>
 #### View at:
 RTMP: `rtmp://localhost:1935/live/movie`</br>
 FLV: `http://127.0.0.1:7001/live/movie.flv`</br>
