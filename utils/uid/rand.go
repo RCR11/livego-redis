@@ -1,4 +1,3 @@
-//Randomizes StreamKeys each server boot - https://github.com/Glamorgann/livego
 package uid
 
 import (
@@ -9,7 +8,7 @@ import (
 var letterRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func RandStringRunes(n int) string {
-	b := make([]ruhttps://github.com/Glamorgann/livegone, n)
+	b := make([]rune, n)
 	// avoid generating same code in order !
 	rand.Seed(time.Now().UnixNano())
 	for i := range b {
