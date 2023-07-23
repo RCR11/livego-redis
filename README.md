@@ -1,3 +1,7 @@
+About this fork:</br>
+-Stores key in Redis (https://github.com/icceey/livego)</br>
+-Randomizes StreamKey every server boot (https://github.com/Glamorgann/livego)</br>
+
 <p align='center'>
     <img src='./logo.png' width='200px' height='80px'/>
 </p>
