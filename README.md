@@ -8,9 +8,14 @@ Execute with `make run`
 Request a stream key from `http://localhost:8090/control/get?room=movie`</br>
 Publish to `rtmp://localhost:1935/live/{StreamKey}`
 #### View at:
-RTMP: `rtmp://localhost:1935/live/movie`</br>
+RTMP: `rtmp://127.0.0.1:1935/live/movie`</br>
 FLV: `http://127.0.0.1:7001/live/movie.flv`</br>
 HLS: `http://127.0.0.1:7002/live/movie.m3u8`</br>
+#### API Endpoints:
+List connected publishers: `http://127.0.0.1:8090/stat/livestat`</br>
+Retrieve the StreamKey: `http://127.0.0.1:8090/control/get?room=movie`</br>
+Generate a new StreamKey: `http://127.0.0.1:8090/control/reset?room=movie`</br>
+Delete a StreamKey: `http://127.0.0.1:8090/control/delete?room=movie`</br>
 
 ------------------------------------------------------------------------------------
 
