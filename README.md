@@ -2,6 +2,19 @@ About this fork:</br>
 -Stores key in Redis (https://github.com/icceey/livego)</br>
 -Randomizes StreamKey every server boot (https://github.com/Glamorgann/livego)</br>
 
+Build with `go build && make build`</br>
+Execute with `make run`</br>
+
+Request a stream key from `http://localhost:8090/control/get?room=movie`</br>
+Publish to `rtmp://localhost:1935/live/{channelkey}` (default appname is live)</br></br>
+View at</br>
+RTMP: `rtmp://localhost:1935/live/movie`</br>
+FLV: `http://127.0.0.1:7001/live/movie.flv`</br>
+HLS: `http://127.0.0.1:7002/live/movie.m3u8`</br>
+
+------------------------------------------------------------------------------------
+
+
 <p align='center'>
     <img src='./logo.png' width='200px' height='80px'/>
 </p>
